@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional, List, Literal
 from datetime import datetime
@@ -48,6 +49,32 @@ class Submission(BaseModel):
 @app.get("/")
 def root():
     return {"ok": True, "msg": "survey backend running"}
+
+
+@app.get("/responses")
+def get_responses():
+    """Return all responses as JSON (for quick viewing)."""
+    if not os.path.exists(CSV_PATH):
+        return {"ok": True, "count": 0, "data": []}
+    
+    with open(CSV_PATH, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    
+    return {"ok": True, "count": len(rows), "data": rows}
+
+
+@app.get("/responses/download")
+def download_responses():
+    """Download the CSV file directly."""
+    if not os.path.exists(CSV_PATH):
+        return JSONResponse({"ok": False, "error": "No data yet"}, status_code=404)
+    
+    return FileResponse(
+        CSV_PATH,
+        media_type="text/csv",
+        filename="dei_survey_responses.csv"
+    )
 
 
 @app.post("/save")
