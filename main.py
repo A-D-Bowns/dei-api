@@ -20,7 +20,8 @@ app = FastAPI()
 ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://dei-survey-hx8y.vercel.app"
+    "https://dei-survey-hx8y.vercel.app",
+    "https://dei-survey-wt3i.vercel.app"
 ]
 
 app.add_middleware(
